@@ -30,14 +30,16 @@ class TextMessaging:
 
         
     def text_messaging_client(self):
-        for newSocket in range(8):
-            context = zmq.Context()
-            text_socket = context.socket(zmq.SUB)
-            text_socket.connect(f"tcp://{self.ip_list[newSocket]}:55{newSocket}1")
-            text_socket.setsockopt(zmq.SUBSCRIBE, b"")
-            thread = threading.Thread(target=self.__text_messaging_client_thread, args=(text_socket,newSocket))
-            self.__text_client_threads.append(thread)
-            thread.start()
+        for ip in self.ip_list:
+            for newSocket in range(8):
+                if(newSocket != self.id):
+                    context = zmq.Context()
+                    text_socket = context.socket(zmq.SUB)
+                    text_socket.connect(f"tcp://{ip}:55{newSocket}1")
+                    text_socket.setsockopt(zmq.SUBSCRIBE, b"")
+                    thread = threading.Thread(target=self.__text_messaging_client_thread, args=(text_socket,newSocket))
+                    self.__text_client_threads.append(thread)
+                    thread.start()
 
     def __text_messaging_client_thread(self, text_socket, sender):
         while True:

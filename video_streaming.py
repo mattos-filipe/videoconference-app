@@ -34,7 +34,7 @@ class VideoStreaming:
         video_capture.release()
 
     def video_streaming_client(self):
-        for newSocket in range(8):
+        for newSocket in range(2):
             context = zmq.Context()
             socket = context.socket(zmq.SUB)
             socket.connect(f"tcp://{self.ip_list[newSocket]}:55{newSocket}2")
