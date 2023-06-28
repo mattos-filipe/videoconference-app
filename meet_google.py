@@ -16,6 +16,9 @@ PORT SCHEME
         3: audio_streaming
 '''
 
+ip_list = ['186.219.82.118','200.136.195.226']
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print('Número incorreto de parâmetros. Exemplo de uso:\n\n\tpython3 servidor.py [id]\nCom 0 <= [id] <= 7')
@@ -26,6 +29,6 @@ if __name__ == "__main__":
     id = int(sys.argv[1])
     
     
-    tm.TextMessaging(id)
-    vs.VideoStreaming(id)
-    us.AudioStreaming(id)
+    tm.TextMessaging(id, ip_list)
+    vs.VideoStreaming(id, ip_list)
+    #us.AudioStreaming(id, ip_list)

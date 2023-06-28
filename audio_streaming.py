@@ -8,8 +8,9 @@ class AudioStreaming:
     __audio_publisher_socket = __context.socket(zmq.PUB)
     __audio_server_threads = []
     __audio_client_threads = []
-    def __init__(self, id):
+    def __init__(self, id, ip_list):
         self.id=id
+        self.ip_list = ip_list
         self.mic = sc.default_microphone()
         self.spk = sc.default_speaker()
         print(f'[{self.id}] Conectado à audiotransmissao!')        
@@ -26,27 +27,28 @@ class AudioStreaming:
         thread.start()
 
     def __audio_streaming_server_thread(self):
-        with self.mic.recorder(samplerate=48000,channels=1) as mic:
+        with self.mic.recorder(samplerate=48000,channels=1) as mic, self.spk.player(samplerate=48000, channels=1) as sc:
             while True:
                 data = mic.record(numframes=1024)
                 data_bytes = data.tobytes()
+                '''data = np.frombuffer(data_bytes, dtype=np.float32)
+                sc.play(data)'''
                 self.__audio_publisher_socket.send(data_bytes)
         '''recorder.stop()'''
 
     def audio_streaming_client(self):
         for newSocket in range(8):
-            if(self.id == newSocket):
-                context = zmq.Context()
-                socket = context.socket(zmq.SUB)
-                socket.connect(f"tcp://localhost:55{newSocket}3")
-                socket.setsockopt(zmq.SUBSCRIBE, b"")
-                thread = threading.Thread(target=self.__audio_streaming_client_thread, args=(socket,newSocket))
-                self.__audio_client_threads.append(thread)
-                thread.start()
+            context = zmq.Context()
+            socket = context.socket(zmq.SUB)
+            socket.connect(f"tcp://{{self.ip_list[newSocket]}}:55{newSocket}3")
+            socket.setsockopt(zmq.SUBSCRIBE, b"")
+            thread = threading.Thread(target=self.__audio_streaming_client_thread, args=(socket,newSocket))
+            self.__audio_client_threads.append(thread)
+            thread.start()
 
     def __audio_streaming_client_thread(self, socket, sender):
         while True:
-            with self.spk.player(samplerate=48000, channels=1) as sp:
+            with self.spk.player(samplerate=48000, channels=1) as sc:
                 data_bytes = socket.recv()
                 data = np.frombuffer(data_bytes, dtype=np.float32)
-                sp.play(data)
+                #sc.play(data)

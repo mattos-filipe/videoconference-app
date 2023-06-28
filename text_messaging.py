@@ -7,8 +7,9 @@ class TextMessaging:
     __text_publisher_socket = __context.socket(zmq.PUB)
     __text_server_threads = []
     __text_client_threads = []
-    def __init__(self, id):
+    def __init__(self, id, ip_list):
         self.id=id
+        self.ip_list = ip_list
         print(f'[{self.id}] Conectado ao chat de texto!')        
         self.text_messaging_server()
         self.text_messaging_client()
@@ -32,7 +33,7 @@ class TextMessaging:
         for newSocket in range(8):
             context = zmq.Context()
             text_socket = context.socket(zmq.SUB)
-            text_socket.connect(f"tcp://localhost:55{newSocket}1")
+            text_socket.connect(f"tcp://{self.ip_list[newSocket]}:55{newSocket}1")
             text_socket.setsockopt(zmq.SUBSCRIBE, b"")
             thread = threading.Thread(target=self.__text_messaging_client_thread, args=(text_socket,newSocket))
             self.__text_client_threads.append(thread)

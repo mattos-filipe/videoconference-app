@@ -9,9 +9,10 @@ class VideoStreaming:
     __video_publisher_socket = __context.socket(zmq.PUB)
     __video_server_threads = []
     __video_client_threads = []
-    def __init__(self, id):
+    def __init__(self, id, ip_list):
         self.id=id
-        print(f'[{self.id}] Conectado à videotransmissao!')        
+        self.ip_list = ip_list
+        print(f'[{self.id}] Conectado à videotransmissao!')
         self.video_streaming_server()
         self.video_streaming_client()
 
@@ -25,7 +26,7 @@ class VideoStreaming:
         thread.start()
 
     def __video_streaming_server_thread(self):
-        video_capture = cv2.VideoCapture(self.id)
+        video_capture = cv2.VideoCapture(0)
         while True:
             ret, frame = video_capture.read()
             encoded_frame = cv2.imencode('.jpg', frame)[1].tobytes()
@@ -36,7 +37,7 @@ class VideoStreaming:
         for newSocket in range(8):
             context = zmq.Context()
             socket = context.socket(zmq.SUB)
-            socket.connect(f"tcp://localhost:55{newSocket}2")
+            socket.connect(f"tcp://{self.ip_list[newSocket]}:55{newSocket}2")
             socket.setsockopt(zmq.SUBSCRIBE, b"")
             thread = threading.Thread(target=self.__video_streaming_client_thread, args=(socket,newSocket))
             self.__video_client_threads.append(thread)
