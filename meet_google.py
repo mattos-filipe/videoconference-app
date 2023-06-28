@@ -1,41 +1,20 @@
-import cv2
-import pyaudio
 import zmq
 import sys
 import text_messaging as tm
 import video_streaming as vs
+import audio_streaming as us
+import pyaudio
  
 '''
 PORT SCHEME
     [55{id}{type}]
     The {id}   variable indicates the program identifier
     The {type} variable indicates the kind of data
-        0: process_communication //depracated
+        0: process_communication //deprecated
         1: text_streaming
         2: video_streaming
         3: audio_streaming
 '''
-def audio_streaming_server(id):
-    audio = pyaudio.PyAudio()
-    stream = audio.open(format=pyaudio.paInt16,
-                        channels=1,
-                        rate=44100,
-                        input=True,
-                        frames_per_buffer=1024)
-
-    context = zmq.Context()
-    audio_socket = context.socket(zmq.PUB)
-    audio_socket.bind(f"tcp://*:55{id}3")
-
-    while True:
-        audio_data = stream.read(1024)
-        audio_socket.send(audio_data)
-
-    stream.stop_stream()
-    stream.close()
-    audio.terminate()
-
-
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -49,3 +28,4 @@ if __name__ == "__main__":
     
     tm.TextMessaging(id)
     vs.VideoStreaming(id)
+    us.AudioStreaming(id)
