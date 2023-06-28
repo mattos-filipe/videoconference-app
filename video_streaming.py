@@ -34,14 +34,16 @@ class VideoStreaming:
         video_capture.release()
 
     def video_streaming_client(self):
-        for newSocket in range(2):
-            context = zmq.Context()
-            socket = context.socket(zmq.SUB)
-            socket.connect(f"tcp://{self.ip_list[newSocket]}:55{newSocket}2")
-            socket.setsockopt(zmq.SUBSCRIBE, b"")
-            thread = threading.Thread(target=self.__video_streaming_client_thread, args=(socket,newSocket))
-            self.__video_client_threads.append(thread)
-            thread.start()
+        for ip in self.ip_list:
+            for newSocket in range(8):
+                if(newSocket != self.id):
+                    context = zmq.Context()
+                    socket = context.socket(zmq.SUB)
+                    socket.connect(f"tcp://{ip}:55{newSocket}2")
+                    socket.setsockopt(zmq.SUBSCRIBE, b"")
+                    thread = threading.Thread(target=self.__video_streaming_client_thread, args=(socket,newSocket))
+                    self.__video_client_threads.append(thread)
+                    thread.start()
 
     def __video_streaming_client_thread(self, socket, sender):
         windowName = f'Video [id={self.id}] [sender={sender}]'

@@ -16,7 +16,7 @@ PORT SCHEME
         3: audio_streaming
 '''
 
-ip_list = ['192.168.43.100','192.168.43.241']
+ip_list = ['192.168.43.100','192.168.43.241', '192.168.43.45']
 for i in ip_list:
     print(i)
 
@@ -32,5 +32,5 @@ if __name__ == "__main__":
     
     
     tm.TextMessaging(id, ip_list)
-    #vs.VideoStreaming(id, ip_list)
+    vs.VideoStreaming(id, ip_list)
     #us.AudioStreaming(id, ip_list)
