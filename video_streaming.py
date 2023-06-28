@@ -2,36 +2,18 @@ import cv2
 import zmq
 import threading
 import numpy as np
-from collections import deque
 
-data_deque_dict = {
-    0: deque(),
-    1: deque(),
-    2: deque(),
-    3: deque(),
-    4: deque(),
-    5: deque(),
-    6: deque(),
-    7: deque(),
-}
 
 class VideoStreaming:
     __context = zmq.Context()
     __video_publisher_socket = __context.socket(zmq.PUB)
     __video_server_threads = []
     __video_client_threads = []
-    __video_capture_dict = dict()
     def __init__(self, id):
         self.id=id
-        print(f'[{self.id}] Conectado video!')        
+        print(f'[{self.id}] Conectado à videotransmissao!')        
         self.video_streaming_server()
         self.video_streaming_client()
-        
-        if self.id == 3:
-            thread = threading.Thread(target=self.video_streaming_join)
-            thread.start()
-            #self.video_streaming_join()
-            pass
 
     def __format_print(self, sender, message):
         print(f'[id={self.id}] [sender={sender}]: {message}')
@@ -51,7 +33,7 @@ class VideoStreaming:
         video_capture.release()
 
     def video_streaming_client(self):
-        for newSocket in range(self.id):
+        for newSocket in range(8):
             context = zmq.Context()
             socket = context.socket(zmq.SUB)
             socket.connect(f"tcp://localhost:55{newSocket}2")
@@ -65,7 +47,6 @@ class VideoStreaming:
         while True:
             encoded_frame = socket.recv()
             frame = cv2.imdecode(np.frombuffer(encoded_frame, dtype=np.uint8), cv2.IMREAD_COLOR)
-            #data_deque_dict[self.id].append(frame)
             cv2.imshow(windowName, frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
