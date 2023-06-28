@@ -54,8 +54,8 @@ def text_messaging_client():
 
 if __name__ == "__main__":
     video_thread = threading.Thread(target=video_streaming_client)
-    audio_thread = threading.Thread(target=audio_streaming_client)
-    text_thread = threading.Thread(target=text_messaging_client)
+    #audio_thread = threading.Thread(target=audio_streaming_client)
+    #text_thread = threading.Thread(target=text_messaging_client)
     video_thread.start()
-    audio_thread.start()
-    text_thread.start()
+    #audio_thread.start()
+    #text_thread.start()
