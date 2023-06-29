@@ -2,6 +2,7 @@ import zmq
 import threading
 import soundcard as sc
 import numpy as np
+import time 
 
 class AudioStreaming:
     __context = zmq.Context()
@@ -34,21 +35,23 @@ class AudioStreaming:
                 '''data = np.frombuffer(data_bytes, dtype=np.float32)
                 sc.play(data)'''
                 self.__audio_publisher_socket.send(data_bytes)
+                time.sleep(0.1)
         '''recorder.stop()'''
 
     def audio_streaming_client(self):
         for newSocket in range(8):
-            context = zmq.Context()
-            socket = context.socket(zmq.SUB)
-            socket.connect(f"tcp://{{self.ip_list[newSocket]}}:55{newSocket}3")
-            socket.setsockopt(zmq.SUBSCRIBE, b"")
-            thread = threading.Thread(target=self.__audio_streaming_client_thread, args=(socket,newSocket))
-            self.__audio_client_threads.append(thread)
-            thread.start()
+            if(newSocket != self.id):
+                context = zmq.Context()
+                socket = context.socket(zmq.SUB)
+                socket.connect(f"tcp://{{self.ip_list[newSocket]}}:55{newSocket}3")
+                socket.setsockopt(zmq.SUBSCRIBE, b"")
+                thread = threading.Thread(target=self.__audio_streaming_client_thread, args=(socket,newSocket))
+                self.__audio_client_threads.append(thread)
+                thread.start()
 
     def __audio_streaming_client_thread(self, socket, sender):
         while True:
             with self.spk.player(samplerate=48000, channels=1) as sc:
                 data_bytes = socket.recv()
                 data = np.frombuffer(data_bytes, dtype=np.float32)
-                #sc.play(data)
+                sc.play(data)

@@ -1,9 +1,10 @@
-import zmq
+import socket
+
 import sys
+sys.path.append("lib")
 import text_messaging as tm
 import video_streaming as vs
 import audio_streaming as us
-import pyaudio
  
 '''
 PORT SCHEME
@@ -16,12 +17,29 @@ PORT SCHEME
         3: audio_streaming
 '''
 
-ip_list = ['192.168.43.100','192.168.43.241', '192.168.43.45']
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+
+ip_address = s.getsockname()[0]
+hostname = socket.gethostname()
+
+print(ip_address)
+print(hostname)
+
+ip_list = [ip_address,'192.168.43.241', '192.168.43.45']
 for i in ip_list:
-    print(i)
+    #print(i)
+    pass
+
+
 
 
 if __name__ == "__main__":
+
+
+
+    
+
     if len(sys.argv) != 2:
         print('Número incorreto de parâmetros. Exemplo de uso:\n\n\tpython3 servidor.py [id]\nCom 0 <= [id] <= 7')
         exit()

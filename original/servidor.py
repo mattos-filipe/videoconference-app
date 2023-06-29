@@ -10,7 +10,7 @@ def video_streaming_server():
     video_socket = context.socket(zmq.PUB)
     video_socket.bind("tcp://*:5555")
 
-    video_capture = cv2.VideoCapture(1)
+    video_capture = cv2.VideoCapture(0)
 
     while True:
         ret, frame = video_capture.read()
@@ -52,8 +52,8 @@ def text_messaging_server():
 
 if __name__ == "__main__":
     video_thread = threading.Thread(target=video_streaming_server)
-    #audio_thread = threading.Thread(target=audio_streaming_server)
+    audio_thread = threading.Thread(target=audio_streaming_server)
     #text_thread = threading.Thread(target=text_messaging_server)
     video_thread.start()
-    #audio_thread.start()
+    audio_thread.start()
     #text_thread.start()

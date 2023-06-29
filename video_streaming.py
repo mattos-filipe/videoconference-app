@@ -2,6 +2,7 @@ import cv2
 import zmq
 import threading
 import numpy as np
+import time
 
 
 class VideoStreaming:
@@ -31,19 +32,21 @@ class VideoStreaming:
             ret, frame = video_capture.read()
             encoded_frame = cv2.imencode('.jpg', frame)[1].tobytes()
             self.__video_publisher_socket.send(encoded_frame)
+            time.sleep(0.1)
+            
         video_capture.release()
 
     def video_streaming_client(self):
         for ip in self.ip_list:
             for newSocket in range(8):
-                if(newSocket != self.id):
-                    context = zmq.Context()
-                    socket = context.socket(zmq.SUB)
-                    socket.connect(f"tcp://{ip}:55{newSocket}2")
-                    socket.setsockopt(zmq.SUBSCRIBE, b"")
-                    thread = threading.Thread(target=self.__video_streaming_client_thread, args=(socket,newSocket))
-                    self.__video_client_threads.append(thread)
-                    thread.start()
+                #if(newSocket != self.id):
+                context = zmq.Context()
+                socket = context.socket(zmq.SUB)
+                socket.connect(f"tcp://{ip}:55{newSocket}2")
+                socket.setsockopt(zmq.SUBSCRIBE, b"")
+                thread = threading.Thread(target=self.__video_streaming_client_thread, args=(socket,newSocket))
+                self.__video_client_threads.append(thread)
+                thread.start()
 
     def __video_streaming_client_thread(self, socket, sender):
         windowName = f'Video [id={self.id}] [sender={sender}]'
