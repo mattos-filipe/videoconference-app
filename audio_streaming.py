@@ -1,20 +1,20 @@
+import time
 import zmq
 import threading
 import soundcard as sc
 import numpy as np
-import time 
+import pyaudio
 
 class AudioStreaming:
     __context = zmq.Context()
     __audio_publisher_socket = __context.socket(zmq.PUB)
     __audio_server_threads = []
     __audio_client_threads = []
+    audio = pyaudio.PyAudio()
     def __init__(self, id, ip_list):
         self.id=id
         self.ip_list = ip_list
-        self.mic = sc.default_microphone()
-        self.spk = sc.default_speaker()
-        print(f'[{self.id}] Conectado à audiotransmissao!')        
+        print(f'[{self.id}] Conectado à audiotransmissao!')
         self.audio_streaming_server()
         self.audio_streaming_client()
 
@@ -23,35 +23,53 @@ class AudioStreaming:
 
     def audio_streaming_server(self):
         self.__audio_publisher_socket.bind(f"tcp://*:55{self.id}3")
-        thread = threading.Thread(target=self.__audio_streaming_server_thread, args=())
+        thread = threading.Thread(target=self.__audio_streaming_server_thread)
         self.__audio_server_threads.append(thread)
         thread.start()
 
     def __audio_streaming_server_thread(self):
-        with self.mic.recorder(samplerate=48000,channels=1) as mic, self.spk.player(samplerate=48000, channels=1) as sc:
-            while True:
-                data = mic.record(numframes=1024)
-                data_bytes = data.tobytes()
-                '''data = np.frombuffer(data_bytes, dtype=np.float32)
-                sc.play(data)'''
-                self.__audio_publisher_socket.send(data_bytes)
-                time.sleep(0.1)
-        '''recorder.stop()'''
+        audio = pyaudio.PyAudio()
+        stream = audio.open(format=pyaudio.paInt16,
+                            channels=1,
+                            rate=44100,
+                            input=True,
+                            frames_per_buffer=5120)
+        while True:
+            audio_data = stream.read(5120)
+            #print('enviado')
+            self.__audio_publisher_socket.send(audio_data)
+            time.sleep(0.05)
+
 
     def audio_streaming_client(self):
-        for newSocket in range(8):
-            if(newSocket != self.id):
-                context = zmq.Context()
-                socket = context.socket(zmq.SUB)
-                socket.connect(f"tcp://{{self.ip_list[newSocket]}}:55{newSocket}3")
-                socket.setsockopt(zmq.SUBSCRIBE, b"")
-                thread = threading.Thread(target=self.__audio_streaming_client_thread, args=(socket,newSocket))
-                self.__audio_client_threads.append(thread)
-                thread.start()
+        for ip in self.ip_list:
+            for newSocket in range(8):
+                if newSocket != self.id:
+                    context = zmq.Context()
+                    socket = context.socket(zmq.SUB)
+                    socket.connect(f"tcp://{ip}:55{newSocket}3")
+                    socket.setsockopt(zmq.SUBSCRIBE, b"")
+                    thread = threading.Thread(target=self.__audio_streaming_client_thread, args=(socket,newSocket))
+                    self.__audio_client_threads.append(thread)
+                    thread.start()
 
     def __audio_streaming_client_thread(self, socket, sender):
+        audio =  pyaudio.PyAudio()
+        stream = audio.open(format=pyaudio.paInt16,
+                            channels=1,
+                            rate=44100,
+                            output=True,
+                            frames_per_buffer=5120)
         while True:
-            with self.spk.player(samplerate=48000, channels=1) as sc:
-                data_bytes = socket.recv()
-                data = np.frombuffer(data_bytes, dtype=np.float32)
-                sc.play(data)
+            audio_data = socket.recv()
+            #print('recebido')
+            time.sleep(0.05)
+            stream.write(audio_data)
+
+    def __del__(self):
+        for th in self.__audio_client_threads:
+            th.join()
+        for th in self.__audio_server_threads:
+            th.join()
+        print('Desconectando da audiotransmissao!')
+        

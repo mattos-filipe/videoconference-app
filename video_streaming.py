@@ -11,6 +11,7 @@ class VideoStreaming:
     __video_server_threads = []
     __video_client_threads = []
     def __init__(self, id, ip_list):
+        self.lock = False
         self.id=id
         self.ip_list = ip_list
         print(f'[{self.id}] Conectado à videotransmissao!')
@@ -29,6 +30,8 @@ class VideoStreaming:
     def __video_streaming_server_thread(self):
         video_capture = cv2.VideoCapture(0)
         while True:
+            if(self.lock):
+                return
             ret, frame = video_capture.read()
             encoded_frame = cv2.imencode('.jpg', frame)[1].tobytes()
             self.__video_publisher_socket.send(encoded_frame)
@@ -51,6 +54,9 @@ class VideoStreaming:
     def __video_streaming_client_thread(self, socket, sender):
         windowName = f'Video [id={self.id}] [sender={sender}]'
         while True:
+            if(self.lock):
+                cv2.destroyWindow(windowName)
+                return  
             encoded_frame = socket.recv()
             frame = cv2.imdecode(np.frombuffer(encoded_frame, dtype=np.uint8), cv2.IMREAD_COLOR)
             cv2.imshow(windowName, frame)
@@ -70,5 +76,11 @@ class VideoStreaming:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break'''
         cv2.destroyWindow(windowName)
-            
+    
+    def __del__(self):
+        for th in self.__video_client_threads:
+            th.join()
+        for th in self.__video_server_threads:
+            th.join()
+        print('Desconectando da videotransmissao!')
         

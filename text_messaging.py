@@ -1,6 +1,8 @@
 import zmq
 import threading
-import numpy as np
+import sys
+import time
+
 
 class TextMessaging:
     __context = zmq.Context()
@@ -8,6 +10,7 @@ class TextMessaging:
     __text_server_threads = []
     __text_client_threads = []
     def __init__(self, id, ip_list):
+        self.lock = False
         self.id=id
         self.ip_list = ip_list
         print(f'[{self.id}] Conectado ao chat de texto!')        
@@ -26,6 +29,9 @@ class TextMessaging:
     def __text_messaging_server_thread(self):
         while True:
             message = input()
+            if(message == 'quit'):
+                self.lock = True
+                return
             self.__text_publisher_socket.send_string(message)
 
         
@@ -43,5 +49,11 @@ class TextMessaging:
 
     def __text_messaging_client_thread(self, text_socket, sender):
         while True:
+            if(self.lock):
+                return  
             message = text_socket.recv_string()
             self.__format_print( sender, message)
+
+    def delete(self):
+        time.sleep(1)
+        sys.exit(0)
