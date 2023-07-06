@@ -1,4 +1,4 @@
-# Integrantes do grupo
+# Integrantes
 Alexandre dos Santos Gualberto 790843  
 Cauê Bonfim Trevisan  
 Kenzo Inanami de Faria 790778  
