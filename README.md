@@ -13,8 +13,8 @@ pip install pyzmq
 pip install opencv-python
 ```
 
-``` bash
+
 ## Instalação da PyAudio
-'''bash
+```bash
 pip install pyaudio
 ```
