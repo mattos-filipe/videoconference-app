@@ -5,14 +5,16 @@ Criação de um aplicativo de videoconferência utilizando as bibliotecas ZeroMQ
 Para rodar a aplicação é necessário ter a versão 3 do python e o gerenciador de pacotes pip instados no computador. A instalação das bibliotecas será mostrada a seguir.
 
 ## Instalação do ZeroMQ
-'''bash
+```bash
 pip install pyzmq
-
+```
 ## Instalação do OpenCV
-'''bash
+```bash
 pip install opencv-python
+```
 
-
+``` bash
 ## Instalação da PyAudio
 '''bash
 pip install pyaudio
+```
