@@ -1,3 +1,11 @@
+#Integrantes do grupo
+Alexandre dos Santos Gualberto 790843
+Cauê Bonfim Trevisan
+Kenzo Inanami de Faria 790778
+Luiz Filipe de Almeida Mattos 772155
+
+
+
 # Aplicativo de video-conferência
 Criação de um aplicativo de videoconferência utilizando as bibliotecas ZeroMQ, openCV e pyaudio para a disciplina de sistemas distribuídos turma 2023/1 da UFSCar.
 
