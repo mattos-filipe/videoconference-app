@@ -1,7 +1,6 @@
 import time
 import zmq
 import threading
-import soundcard as sc
 import numpy as np
 import pyaudio
 

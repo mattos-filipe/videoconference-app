@@ -35,7 +35,7 @@ class VideoStreaming:
             ret, frame = video_capture.read()
             encoded_frame = cv2.imencode('.jpg', frame)[1].tobytes()
             self.__video_publisher_socket.send(encoded_frame)
-            time.sleep(0.1)
+            time.sleep(1)
             
         video_capture.release()
 
@@ -58,6 +58,7 @@ class VideoStreaming:
                 cv2.destroyWindow(windowName)
                 return  
             encoded_frame = socket.recv()
+            time.sleep(0.1)
             frame = cv2.imdecode(np.frombuffer(encoded_frame, dtype=np.uint8), cv2.IMREAD_COLOR)
             cv2.imshow(windowName, frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):

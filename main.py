@@ -28,7 +28,7 @@ hostname = socket.gethostname()
 print(ip_address)
 print(hostname)
 
-ip_list = [ip_address]
+ip_list = [ip_address, '192.168.43.236', '192.168.43.241','192.168.43.45']
 for i in ip_list:
     #print(i)
     pass
