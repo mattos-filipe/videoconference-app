@@ -38,3 +38,8 @@ ipconfig
   python3 main.py {id}
   ```
 ## No mesmo computador
+  Para iniciar a chamada no mesmo computador, deixe a lista de ip's do arquivo main.py como indicado.
+  Basta, então, executar o comando abaixo e substituir {id} por um número de 0 a 7 diferente dos participantes que já estão na chamada:
+  ```bash
+  python3 main.py {id}
+  ```
