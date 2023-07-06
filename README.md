@@ -1,8 +1,8 @@
 # Integrantes do grupo
-Alexandre dos Santos Gualberto 790843
-Cauê Bonfim Trevisan
-Kenzo Inanami de Faria 790778
-Luiz Filipe de Almeida Mattos 772155
+Alexandre dos Santos Gualberto 790843\n
+Cauê Bonfim Trevisan\n
+Kenzo Inanami de Faria 790778\n
+Luiz Filipe de Almeida Mattos 772155\n
 
 
 
